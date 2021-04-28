@@ -1,11 +1,12 @@
 #include <stdio.h>
-#include <ctype.h>
 #include <stdlib.h>
+
+#define LENGTH 60
 
 /*declaration of struct inkedlist*/
 typedef struct node *ptr;
 typedef struct node {
-    char ch[60];
+    char ch[LENGTH];
     ptr next;
 } item;/*each inked list contains data of 60 char, and a next pointer*/
 
@@ -16,17 +17,19 @@ void printText(int dataStructureType , void* p);
 int main() {
     int dataStructureType;
     int error = 0;
-    ptr headOfList= NULL;                    /*creat the head pointer of the inkedlist */
 
-	printf("\nPlease choose the data structure. Enter 1 For linked list, and 2 for buffer\n\n");
-	 scanf("%d", &dataStructureType);
+    ptr headOfList= NULL;                    					/*creat the head pointer of the inkedlist */
 
 
-	printf("\nPlease enter your text\n\n");
+  
+    printf("\nPlease choose the data structure. Enter 1 For linked list, and 2 for buffer\n\n");
+
+	scanf("%d", &dataStructureType);
+
 
 /*buffer*/
     if (dataStructureType == 2) {
-	
+
         char *p;
         p = (char *) calloc(1, sizeof(char));
         error = readText(dataStructureType,(void*)p);
@@ -39,7 +42,7 @@ int main() {
     else if (dataStructureType == 1)
     {
 
-        headOfList=(item*)calloc(1,sizeof(item));
+        headOfList=(ptr)calloc(1,sizeof(item)); /*create thr first node*/
         error=readText(dataStructureType,(void*)headOfList);
         printText(dataStructureType,(void*)headOfList);
         if (error == 1) {
@@ -57,15 +60,15 @@ int readText(int dataStructureType , void* p)
 
     if (dataStructureType==2)							/*buffer*/
     {
-        char *pointer , *q;
+        char *pointer,*q;
         pointer=(char*)p;               /*casting from given void to char*/
-        
+
         while(c!=EOF)
         {
             if (c!='\n'){
                 pointer[counter]=c;
                 counter++;
-                q=(char*)realloc(pointer,counter);
+                q=(char *)realloc(pointer,counter);
                 if (!q) {
                     error =1;
                     exit(0);
@@ -77,25 +80,26 @@ int readText(int dataStructureType , void* p)
     }
     else if(dataStructureType==1) /*inkedlist*/
     {
-        ptr *pHead = (ptr*)p; /*casting for the given void char*/
-        ptr headOfList,q;
-        headOfList=*pHead;
-        headOfList->next=NULL;
+        ptr p1 = (ptr)p;            /*casting for the given void char*/
+        ptr newNode;
+        newNode=p1;
+        
 
         while(c!=EOF)
         {
             if (c!='\n'){
-                headOfList->ch[counter]=(char)c;
+                p1->ch[counter]=(char)c;
                 counter++;
-                if(counter==60) 				/*max 60 chars in each node so we need to 											creat a new node*/
+                if(counter==LENGTH) 					/*max 60 chars in each node so we need to creat a new node*/
                 {
-                    q=(ptr)calloc(1,sizeof(item));             /*creat new item node */
-                    if(!q){
+                    newNode=(ptr)calloc(1,sizeof(item));             /*creat new item node*/
+                    if(!newNode){
                         error=1;
                         exit(0);
                     }
-                    q->next=NULL;
-                    headOfList->next=q;
+                    newNode->next=NULL;
+                    p1->next=newNode;
+                    p1=newNode;
                     counter=0;
                     }
             }
@@ -112,7 +116,7 @@ int readText(int dataStructureType , void* p)
         {
             for (counter=0 ; ((char*)p)[counter] != '\0' ; counter++)
             {
-                if (counter%60 == 0 && counter!=0)
+                if (counter%LENGTH == 0 && counter!=0)
                 {
                     putchar('\n'); /*each row have 60 char*/
                 }
@@ -122,18 +126,23 @@ int readText(int dataStructureType , void* p)
         }
         else if (dataStructureType==1) /*inked list*/
         {
-            ptr headOfList = (ptr)p;
-            for (counter=0; headOfList->ch[counter] ; counter++) {
-                putchar(headOfList->ch[counter]);
-                if (counter == 60) {
-                    putchar('\n');
-                    counter=0;
-                    headOfList = headOfList->next;
+            ptr p1 = (ptr)p;
+            counter=0;
+            while((p1) && (p1->ch[counter] != '\0')){
+                     putchar( p1->ch[counter]);
+                     counter++;
+                    if (counter==LENGTH) {
+                        p1=p1->next;
+                        counter=0;
+			putchar('\n');
+                    }
+
                 }
             }
+
         }
 
-    }
+
 
 
 
