@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define LENGTH 60
+#define LENGTH 3
 
 /*declaration of struct inkedlist*/
 typedef struct node *ptr;
@@ -13,18 +13,19 @@ typedef struct node {
 /*declaration of functions*/
 int readText(int dataStructureType , void* p);
 void printText(int dataStructureType , void* p);
+void freelist (int dataStructureType , void* p);
 
 int main() {
     int dataStructureType;
     int error = 0;
 
-    ptr headOfList= NULL;                    					/*creat the head pointer of the inkedlist */
+    ptr headOfList= NULL;                    /*creat the head pointer of the inkedlist */
 
 
-  
+    setbuf(stdout, 0);
     printf("\nPlease choose the data structure. Enter 1 For linked list, and 2 for buffer\n\n");
 
-	scanf("%d", &dataStructureType);
+    scanf("%d", &dataStructureType);
 
 
 /*buffer*/
@@ -33,10 +34,11 @@ int main() {
         char *p;
         p = (char *) calloc(1, sizeof(char));
         error = readText(dataStructureType,(void*)p);
-        printText(dataStructureType, p);
+        printText(dataStructureType, (void*)p);
         if (error == 1) {
             printf("\nmemory allocation failed\n\n");
         }
+        freelist(dataStructureType,(void*)p); /*re-allocate*/
     }
 /*inked list*/
     else if (dataStructureType == 1)
@@ -48,7 +50,10 @@ int main() {
         if (error == 1) {
             printf("\nmemory allocation failed\n\n");
         }
+        freelist(dataStructureType,(void*)headOfList); /*re-allocate*/
     }
+
+
     return 0;
 }
 
@@ -83,16 +88,15 @@ int readText(int dataStructureType , void* p)
         ptr p1 = (ptr)p;            /*casting for the given void char*/
         ptr newNode;
         newNode=p1;
-        
 
         while(c!=EOF)
         {
             if (c!='\n'){
                 p1->ch[counter]=(char)c;
                 counter++;
-                if(counter==LENGTH) 					/*max 60 chars in each node so we need to creat a new node*/
+                if(counter==LENGTH) 				/*max 60 chars in each node so we need to creat a new node*/
                 {
-                    newNode=(ptr)calloc(1,sizeof(item));             /*creat new item node*/
+                    newNode=(ptr)calloc(1,sizeof(item));             /*creat new item node */
                     if(!newNode){
                         error=1;
                         exit(0);
@@ -132,9 +136,9 @@ int readText(int dataStructureType , void* p)
                      putchar( p1->ch[counter]);
                      counter++;
                     if (counter==LENGTH) {
+                        putchar('\n');
                         p1=p1->next;
                         counter=0;
-			putchar('\n');
                     }
 
                 }
@@ -142,7 +146,22 @@ int readText(int dataStructureType , void* p)
 
         }
 
+void freelist(int dataStructureType , void* p) {
+if (dataStructureType==1) /*linked list*/
+{
+    ptr p1=(ptr)p; /*casting*/
 
+    while (p1) {
+        p1 = (p1)->next;
+        free(p);
+    }
+}
+else if (dataStructureType==2)
+        {
+            free(p);
+        }
+
+    }
 
 
 
